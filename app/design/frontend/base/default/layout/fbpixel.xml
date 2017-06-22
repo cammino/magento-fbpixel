@@ -1,0 +1,7 @@
+<layout version="1.0.0">
+    <default>
+        <reference name="head">
+			<block type="fbpixel/tracking" name="fbpixeltracking" template="fbpixel/tracking.phtml" />
+		</reference>
+	</default>
+</layout>

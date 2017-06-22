@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <tabs>
+        <fbpixel translate="label" module="fbpixel">
+            <label>Fbpixel</label>
+            <sort_order>100</sort_order>
+        </fbpixel>
+    </tabs>
+    <sections>
+        <fbpixel translate="label" module="fbpixel">
+            <label>General</label>
+            <tab>fbpixel</tab>
+            <sort_order>1000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+ 
+            <groups>
+                <fbpixel_group translate="label" module="fbpixel">
+                    <label>General</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1000</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+ 
+                    <fields>
+                        <fbpixel_store_id translate="label">
+                            <label>ID da loja</label>
+                            <comment>código gerado pelo Facebook Pixel</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </fbpixel_store_id>
+                        <fbpixel_active translate="label">
+                            <label>Ativar</label>
+                            <comment></comment>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </fbpixel_active>
+                    </fields>
+                </fbpixel_group>
+            </groups>
+        </fbpixel>
+    </sections>
+</config>
