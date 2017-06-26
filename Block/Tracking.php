@@ -97,7 +97,7 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
     {
         $product = $this->getProduct();
 
-        $items[] = array(
+        $data = array(
             "content_type"     => 'product',
             "content_ids"      => (int) $this->fbpixelHelper->getProductid($product),
             "content_name"     => (string) $this->fbpixelHelper->getProductName($product),
@@ -106,7 +106,7 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
             "currency"         => 'BRL'
         );
 
-        $json = json_encode($items);
+        $json = json_encode($data);
 
         return "fbq('track', 'ViewContent', $json);";
     }  
@@ -117,7 +117,6 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         $sessionItem = Mage::getModel('core/session')->getFbpixelAddProductToCart();
         $products[] = Mage::getModel('catalog/product')->load($sessionItem->getId());        
         $superGroup = $sessionItem->getSuperGroup();
-        $items = array();
 
         $url = count($products) > 0 ? $this->fbpixelHelper->getProductUrl($products[0]) : "";
         $img = count($products) > 0 ? $this->fbpixelHelper->getProductImage($products[0]) : "";
@@ -131,17 +130,25 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
 
         Mage::getModel('core/session')->unsFbpixelAddProductToCart();
 
+        $ids = array();
+        $names = array();
+        $value = 0;
+
         foreach ($products as $product) {
-            $items[] = array(
-                "content_type"     => 'product',
-                "content_ids"      => (int)    $this->fbpixelHelper->getProductId($product),
-                "content_name"     => (string) $this->fbpixelHelper->getProductName($product),
-                "value"            => (float)  $this->fbpixelHelper->getProductPrice($product),
-                "currency"         => 'BRL'
-            );
+            $ids[] = (int) $this->fbpixelHelper->getProductId($product);
+            $names[] = (string) $this->fbpixelHelper->getProductName($product);
+            $value += (float) $this->fbpixelHelper->getProductPrice($product);
         }
 
-        $json = json_encode($items);
+        $data = array(
+            "content_type"     => 'product',
+            "content_ids"      => $ids,
+            "content_name"     => $names,
+            "value"            => $value,
+            "currency"         => 'BRL'
+        );
+
+        $json = json_encode($data);
         return "fbq('track', 'AddToCart', $json);";
     }
 
@@ -150,14 +157,13 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
     {
         $orderId = Mage::getModel('core/session')->getFbpixelOrder();
         $order = Mage::getModel('sales/order')->load($orderId);
-
         $orderItems = $order->getAllVisibleItems();
-        $items = array();
 
         // Count item's total
         $totalItems = $orderItems;
         $i = 0;
         $ids = '';
+        $names = array();
 
         foreach ($orderItems as $orderItem) {
             $product = Mage::getModel('catalog/product')->load($orderItem->getProductId());
@@ -174,26 +180,19 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
                     $img = $parentProduct->getImageUrl();
                 }
             }
-
-            $items[] = array (
-                "id"    => (int)    $this->fbpixelHelper->getProductId($product),
-                "name"  => (string) $this->fbpixelHelper->getProductName($product),
-                "price" => (float)  $this->fbpixelHelper->getOrderItemPrice($orderItem),
-                "sku"   => (string) $this->fbpixelHelper->getProductSku($product),
-                "image" => (string) $img,
-                "qty"   => (int)    $orderItem->getData('qty_ordered'),
-                "url"   => (string) $url
-            );
             
-            $ids .= ($i < count($totalItems)) ? $this->fbpixelHelper->getProductId($product) . ', ' : $this->fbpixelHelper->getProductId($product);
+            $ids[] = (int) $this->fbpixelHelper->getProductId($product);
+            $names[] = (string) $this->fbpixelHelper->getProductName($product);
         }
 
         $json = array(
-            "order_id"    => (int) $orderId,
-            "num_items"   => count($items),
-            "content_ids" => $ids,            
-            "value"       => (float)  $order->getGrandTotal(),
-            "currency"    => 'BRL'
+            "order_id"         => (int) $orderId,
+            "num_items"        => count($ids),
+            "content_type"     => 'product',
+            "content_ids"      => $ids,
+            "content_name"     => $names,
+            "value"            => (float) $order->getGrandTotal(),
+            "currency"         => 'BRL'
         );
 
         $jsonresult = json_encode($json);
