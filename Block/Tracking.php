@@ -143,7 +143,7 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         $data = array(
             "content_type"     => 'product',
             "content_ids"      => $ids,
-            "content_name"     => $names,
+            "content_name"     => 'Cart',
             "value"            => $value,
             "currency"         => 'BRL'
         );
@@ -190,7 +190,7 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
             "num_items"        => count($ids),
             "content_type"     => 'product',
             "content_ids"      => $ids,
-            "content_name"     => $names,
+            "content_name"     => 'Order Receipt',
             "value"            => (float) $order->getGrandTotal(),
             "currency"         => 'BRL'
         );
