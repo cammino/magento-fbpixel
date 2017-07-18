@@ -46,9 +46,15 @@ class Cammino_Fbpixel_Helper_Data extends Mage_Core_Helper_Abstract
             return $this->getGroupedProductPrice($product);
         } else if ($productType == "bundle") {
             return $this->getBundleProductPrice($product);
+        } else if ($productType == "configurable") {
+            return $this->getConfigurableProductPrice($product);
         } else{
             return "";
         }
+    }
+
+    public function getConfigurableProductPrice($product){
+        return $product->getPrice();
     }
 
     /**
