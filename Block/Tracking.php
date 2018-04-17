@@ -195,6 +195,7 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
             "currency"         => 'BRL'
         );
 
+        Mage::getModel('core/session')->unsFbpixelOrder();
         $jsonresult = json_encode($json);
         return "fbq('track', 'Purchase', $jsonresult);";
     }
