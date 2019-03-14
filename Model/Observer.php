@@ -1,50 +1,64 @@
 <?php
 /**
- * Observer
- *
- * This file is responsible for execute functions from observers
- *
- * @category   Fbpixel
- * @package    Tracking
- * @author     Cammino Digital <contato@cammino.com.br>
+ * Observer.php
+ * 
+ * @category Cammino
+ * @package  Cammino_Fbpixel
+ * @author   Cammino Digital <suporte@cammino.com.br>
+ * @license  http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * @link     https://github.com/cammino/magento-fbpixel
  */
 
-// Observer
-class Cammino_Fbpixel_Model_Observer 
+class Cammino_Fbpixel_Model_Observer
 {
-	protected $fbpixelHelper;
+    protected $_fbpixelHelper;
 
-	// Constructor
-	function __construct()
+    /**
+     * Init facebook helper
+     * 
+     * @return null
+     */
+    function __construct()
     {
-        $this->fbpixelHelper = Mage::helper('fbpixel');
+        $this->_fbpixelHelper = Mage::helper('fbpixel');
     }
 
-    // Observer responsible for get the product added to cart (null)
-	public function addToCart()
-	{
-		$id  = Mage::app()->getRequest()->getParam('product', 0);
-		$qty = Mage::app()->getRequest()->getParam('qty', 1);
-		$superGroup = Mage::app()->getRequest()->getParam('super_group');
-		
-		Mage::getModel('core/session')->setFbpixelAddProductToCart(
-			new Varien_Object(array(
-				'id'  => (int) $id,
-				'qty' => (int) $qty,
-				'super_group' => (array) $superGroup
-			))
-		);
-	}
+    /**
+     * Function responsible for get the product added to cart
+     * and set id, qty and supergroup to an session variable
+     * 
+     * @return null
+     */
+    public function addToCart()
+    {
+        $id  = Mage::app()->getRequest()->getParam('product', 0);
+        $qty = Mage::app()->getRequest()->getParam('qty', 1);
+        $superGroup = Mage::app()->getRequest()->getParam('super_group');
 
-	// Observer responsible for get order when it finished (null)
-	public function orderSuccess()
-	{
-		$incrementId = Mage::getSingleton('checkout/session')->getLastRealOrderId();
-		$order = Mage::getModel('sales/order');
-		$order->loadByIncrementId($incrementId);
+        Mage::getModel('core/session')->setFbpixelAddProductToCart(
+            new Varien_Object(
+                array(
+                    'id'  => (int) $id,
+                    'qty' => (int) $qty,
+                    'super_group' => (array) $superGroup
+                )
+            )
+        );
+    }
 
-		$orderId = (int) $order->getId();
-		Mage::getModel('core/session')->setFbpixelOrder($orderId);
-	}
+    /**
+     * Function responsible for get order when it finished
+     * and set orderId to an session variable
+     * 
+     * @return null
+     */
+    public function orderSuccess()
+    {
+        $incrementId = Mage::getSingleton('checkout/session')->getLastRealOrderId();
+        $order = Mage::getModel('sales/order');
+        $order->loadByIncrementId($incrementId);
 
+        $orderId = (int) $order->getId();
+        Mage::getModel('core/session')->setFbpixelOrder($orderId);
+    }
 }

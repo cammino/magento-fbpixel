@@ -1,45 +1,53 @@
 <?php
 /**
- * Data
- *
- * This file is contains some functions to help other methods in module
- *
- * @category   Fbpixel
- * @package    Tracking
- * @author     Cammino Digital <contato@cammino.com.br>
+ * Data.php
+ * 
+ * @category Cammino
+ * @package  Cammino_Fbpixel
+ * @author   Cammino Digital <suporte@cammino.com.br>
+ * @license  http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * @link     https://github.com/cammino/magento-fbpixel
  */
 
 class Cammino_Fbpixel_Helper_Data extends Mage_Core_Helper_Abstract
 {
-	/**
-    * Get the Id of the product
-    *
-    * @return int
-    */
+    /**
+     * Get product id
+     * 
+     * @param object $product Magento product
+     * 
+     * @return int
+     */
     public function getProductId($product)
     {
         return $product->getId();
     }
 
-    /**
-    * Get the name of the product
-    *
-    * @return string
-    */
+     /**
+     * Get product name
+     * 
+     * @param object $product Magento product
+     * 
+     * @return string
+     */
     public function getProductName($product)
     {
         return $product->getName();
     }
 
     /**
-    * Get the price of the product
-    *
-    * @return float
-    */
+     * Get product price
+     * 
+     * @param object $product Magento product
+     * 
+     * @return float|string
+     */
     public function getProductPrice($product)
     {
-        $productType = $product->getTypeId() != NULL ? $product->getTypeId() : $product->product_type;
-        
+        // phpcs:disable Zend.NamingConventions.ValidVariableName
+        $productType = $product->getTypeId() != null ? $product->getTypeId() : $product->product_type;
+        // phpcs:enable Zend.NamingConventions.ValidVariableName
+
         if ($productType == "simple") {
             return $this->getSimpleProductPrice($product);
         } else if ($productType == "grouped") {
@@ -48,35 +56,49 @@ class Cammino_Fbpixel_Helper_Data extends Mage_Core_Helper_Abstract
             return $this->getBundleProductPrice($product);
         } else if ($productType == "configurable") {
             return $this->getConfigurableProductPrice($product);
-        } else{
+        } else {
             return "";
         }
     }
 
-    public function getConfigurableProductPrice($product){
+    /**
+     * Get configurable product price
+     * 
+     * @param object $product Magento product
+     * 
+     * @return float
+     */
+    public function getConfigurableProductPrice($product) 
+    {
         return $product->getPrice();
     }
 
     /**
-    * Get price for simple product
-    *
-    * @return string
-    */
-    public function getSimpleProductPrice($product) {
+     * Get simple product price
+     * 
+     * @param object $product Magento product
+     * 
+     * @return float
+     */
+    public function getSimpleProductPrice($product)
+    {
         return $product->getFinalPrice();
     }
 
     /**
-    * Get price for grouped product
-    *
-    * @return string
-    */
-    public function getGroupedProductPrice($product) {
+     * Get grouped product price
+     * 
+     * @param object $product Magento product
+     * 
+     * @return float
+     */
+    public function getGroupedProductPrice($product)
+    {
         $associated = $this->getAssociatedProducts($product);
         $prices = array();
         $minimal = 0;
 
-        foreach($associated as $item) {
+        foreach ($associated as $item) {
             if ($item->getFinalPrice() > 0) {
                 array_push($prices, $item->getFinalPrice());
             }
@@ -92,11 +114,14 @@ class Cammino_Fbpixel_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-    * Get price for bundle product
-    *
-    * @return string
-    */
-    public function getBundleProductPrice($product){
+     * Get bundle product price
+     * 
+     * @param object $product Magento product
+     * 
+     * @return float
+     */
+    public function getBundleProductPrice($product)
+    {
         $optionCollection = $product->getTypeInstance(true)->getOptionsIds($product);
         $selectionsCollection = Mage::getModel('bundle/selection')->getCollection();
         $selectionsCollection->getSelect()->where('option_id in (?)', $optionCollection)->where('is_default = ?', 1);
@@ -114,86 +139,107 @@ class Cammino_Fbpixel_Helper_Data extends Mage_Core_Helper_Abstract
             );
             $defaultPrice += ($_selectionPrice * $_selection->getSelectionQty());
         }
+
         return $defaultPrice;
     }
 
     /**
-    * Get price of last product changed in quote
-    *
-    * @return float
-    */
-    public function getPriceProductQuote($productId){
+     * Get price of last product changed in quote
+     * 
+     * @param object $productId Magento product id
+     * 
+     * @return float
+     */
+    public function getPriceProductQuote($productId)
+    {
         $quote = Mage::getSingleton('checkout/session')->getQuote();
         $lastItem = null;
         $price = 0;
+
         foreach ($quote->getAllItems() as $item) {
-            if($item->getProductId() == $productId){
+            if ($item->getProductId() == $productId) {
                 $lastItem = $lastItem == null ? $item : $lastItem;
                 $lastItem = $lastItem->getCreatedAt() < $item->getCreatedAt() ? $item : $lastItem;
                 $price = $lastItem->getPrice();
             }
         }
+
         return $price;
     }
 
     /**
-    * Get associated products of one product
-    *
-    * @return collection
-    */
-    public function getAssociatedProducts($product) {
+     * Get a collection of associated products of one product
+     * 
+     * @param object $product Magento product
+     * 
+     * @return object
+     */
+    public function getAssociatedProducts($product)
+    {
         $collection = $product->getTypeInstance(true)->getAssociatedProductCollection($product)
             ->addAttributeToSelect('*')
             ->addAttributeToFilter('status', 1);
+
         return $collection;
     }
 
     /**
-    * Get the sku of the product
-    *
-    * @return int
-    */
+     * Get product sku
+     * 
+     * @param object $product Magento product
+     * 
+     * @return string
+     */
     public function getProductSku($product)
     {
         return $product->getSku();
     }
 
     /**
-    * Get the image of the product
-    *
-    * @return string
-    */
+     * Get image url of the product
+     * 
+     * @param object $product Magento product
+     * 
+     * @return string
+     */
     public function getProductImage($product)
     {
         return $product->getImageUrl();
     }
 
     /**
-    * Get the url of the product
-    *
-    * @return string
-    */
+     * Get the url of the product
+     * 
+     * @param object $product Magento product
+     * 
+     * @return string
+     */
     public function getProductUrl($product)
     {
-		return Mage::helper('catalog/product')->getProductUrl($product->getId());
+        return Mage::helper('catalog/product')->getProductUrl($product->getId());
     }
 
-    /**
-    * Convert string in json
-    *
-    * @return json
-    */
+     /**
+     * Convert string in json
+     * 
+     * @param array $string Random values to be converted in json
+     * 
+     * @return string
+     */
     public function getJson($string)
     {
         return json_encode($string);
     }
 
     /**
-    * Calc item price from order
-    *
-    * @return string
-    */
-    function getOrderItemPrice($orderItem) {
-        return (($orderItem->getRowTotal()-$orderItem->getDiscount())/$orderItem->getQtyOrdered());
+     * Calc item price from order
+     * 
+     * @param array $orderItem Magento Order Item
+     * 
+     * @return float
+     */
+    public function getOrderItemPrice($orderItem)
+    {
+        return (($orderItem->getRowTotal() - $orderItem->getDiscount()) / $orderItem->getQtyOrdered());
     }
 }

@@ -1,64 +1,102 @@
 <?php
+/**
+ * Tracking.php
+ * 
+ * @category Cammino
+ * @package  Cammino_Fbpixel
+ * @author   Cammino Digital <suporte@cammino.com.br>
+ * @license  http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * @link     https://github.com/cammino/magento-fbpixel
+ */
+
 class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
 {
-    // Local Variable
-    protected $fbpixelHelper;
+    protected $_fbpixelHelper;
 
-    // Constructor
+    /**
+     * Init facebook helper
+     * 
+     * @return null
+     */
     function __construct()
     {
-        $this->fbpixelHelper = Mage::helper('fbpixel');
+        $this->_fbpixelHelper = Mage::helper('fbpixel');
     }
 
-    // Check if module is active (String)
+    /**
+     * Function responsible for check if module is enable
+     * 
+     * @return bool
+     */
     public function isFbpixelActive()
     {
         return (bool) Mage::getStoreConfig('fbpixel/fbpixel_group/fbpixel_active');
     }
 
-    // Get the Gokeep Store ID (String)
+    /**
+     * Function responsible for return Facebook Pixel ID
+     * 
+     * @return string
+     */
     public function getFbpixelStoreId()
     {
         return (string) Mage::getStoreConfig('fbpixel/fbpixel_group/fbpixel_store_id');
     }
 
-    // Function responsible for delegating which tag will be rendered based on page (String)
+    /**
+     * Function responsible for delegating which tag 
+     * will be rendered based on page
+     * 
+     * @return string
+     */
     public function getPageTrackingCode()
     {
         try {
-            return $this->setPage();
+            return $this->_setPage();
         } catch (Exception $e) {
             Mage::log($e, null, 'fbpixel.log');
             return "";
         }
     }
 
-    // Function responsible for delegating which tag will be rendered based on observers (String)
+    /**
+     * Function responsible for delegating which tag 
+     * will be rendered based on observers
+     * 
+     * @param string $page Magento page identifier
+     * 
+     * @return string
+     */
     public function getObserverTrackingCode($page)
     {
         try {
-            if($page == "cart") {
-                return $this->setObserverCart();
-            } else if($page == "order"){
-                return $this->setObserverOrder();
-            } else if($page == "lead") {
+            if ($page == "cart") {
+                return $this->_setObserverCart();
+            } else if ($page == "order") {
+                return $this->_setObserverOrder();
+            } else if ($page == "lead") {
                 return $this->setObserverLead();
             } else {
                 return "";
             }
         } catch (Exception $e) {
-            Mage::log($e, null, 'gokeep.log');
+            Mage::log($e, null, 'fbpixel.log');
             return "";
         }
     }
 
-    // Identifies the page and call the function responsible for generating the tag
-    // current_product validation must come before the current_category verification (String)
-    private function setPage()
+    /**
+     * Identifies the page and call the function responsible for generating the tag
+     * will be rendered based on observers
+     *
+     * current_product validation must come before the current_category verification
+     *
+     * @return string
+     */
+    private function _setPage()
     {
         // Product View
-        if(Mage::registry('current_product')) 
-        {
+        if (Mage::registry('current_product')) {
             return $this->getTagProductView();
         }
 
@@ -71,38 +109,51 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         return "";
     }
 
-    // Identify if there is a variable in the session to render the tag and checks which tag will be rendered based on the action cart (add, update, delete) - (String)
-    private function setObserverCart()
+    /**
+     * Identify if there is a variable in the session to render the tag and checks
+     * which tag will be rendered based on the action cart (add, update, delete)
+     *
+     * @return string
+     */
+    private function _setObserverCart()
     {
-        if (Mage::getModel('core/session')->getFbpixelAddProductToCart() != null)
-        {
-            return $this->getTagCartAdd();
+        if (Mage::getModel('core/session')->getFbpixelAddProductToCart() != null) {
+            return $this->_getTagCartAdd();
         }
 
         return "";
     }
 
-    // Identify if there is a variable in the session to render the tag for order success (String)
-    private function setObserverOrder()
+    /**
+     * Identify if there is a variable in the session to render
+     * the tag for order success
+     *
+     * @return string
+     */
+    private function _setObserverOrder()
     {
-        if (Mage::getModel('core/session')->getFbpixelOrder() != null)
-        {
+        if (Mage::getModel('core/session')->getFbpixelOrder() != null) {
             return $this->getTagOrder();
         }
+
         return "";
     }
 
-    // Get product view tag (String)
+    /**
+     * Get product view tag
+     *
+     * @return string
+     */
     public function getTagProductView() 
     {
         $product = $this->getProduct();
 
         $data = array(
             "content_type"     => 'product',
-            "content_ids"      => (int) $this->fbpixelHelper->getProductid($product),
-            "content_name"     => (string) $this->fbpixelHelper->getProductName($product),
+            "content_ids"      => (int) $this->_fbpixelHelper->getProductid($product),
+            "content_name"     => (string) $this->_fbpixelHelper->getProductName($product),
             "content_category" => (string) $this->getRegistryCategory(),
-            "value"            => (float)  $this->fbpixelHelper->getProductPrice($product),
+            "value"            => (float) $this->_fbpixelHelper->getProductPrice($product),
             "currency"         => 'BRL'
         );
 
@@ -111,17 +162,21 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         return "fbq('track', 'ViewContent', $json);";
     }  
 
-    // Get cart add tag (String)
-    private function getTagCartAdd()
+    /**
+     * Get cart add tag
+     *
+     * @return string
+     */
+    private function _getTagCartAdd()
     {
         $sessionItem = Mage::getModel('core/session')->getFbpixelAddProductToCart();
         $products[] = Mage::getModel('catalog/product')->load($sessionItem->getId());        
         $superGroup = $sessionItem->getSuperGroup();
 
-        $url = count($products) > 0 ? $this->fbpixelHelper->getProductUrl($products[0]) : "";
-        $img = count($products) > 0 ? $this->fbpixelHelper->getProductImage($products[0]) : "";
+        $url = count($products) > 0 ? $this->_fbpixelHelper->getProductUrl($products[0]) : "";
+        $img = count($products) > 0 ? $this->_fbpixelHelper->getProductImage($products[0]) : "";
 
-        if (($superGroup != null) && (count((array)$superGroup) > 0)) {
+        if (($superGroup != null) && (count((array) $superGroup) > 0)) {
             $products = array();
             foreach ($superGroup as $superGroupId => $superGroupQty) {
                 $products[] = Mage::getModel('catalog/product')->load($superGroupId);
@@ -135,9 +190,9 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         $value = 0;
 
         foreach ($products as $product) {
-            $ids[] = (int) $this->fbpixelHelper->getProductId($product);
-            $names[] = (string) $this->fbpixelHelper->getProductName($product);
-            $value += (float) $this->fbpixelHelper->getProductPrice($product);
+            $ids[] = (int) $this->_fbpixelHelper->getProductId($product);
+            $names[] = (string) $this->_fbpixelHelper->getProductName($product);
+            $value += (float) $this->_fbpixelHelper->getProductPrice($product);
         }
 
         $data = array(
@@ -152,7 +207,11 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         return "fbq('track', 'AddToCart', $json);";
     }
 
-    // Get order tag (String)
+    /**
+     * Get order tag
+     *
+     * @return string
+     */
     public function getTagOrder()
     {
         $orderId = Mage::getModel('core/session')->getFbpixelOrder();
@@ -181,8 +240,8 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
                 }
             }
             
-            $ids[] = (int) $this->fbpixelHelper->getProductId($product);
-            $names[] = (string) $this->fbpixelHelper->getProductName($product);
+            $ids[] = (int) $this->_fbpixelHelper->getProductId($product);
+            $names[] = (string) $this->_fbpixelHelper->getProductName($product);
         }
 
         $json = array(
@@ -200,17 +259,25 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         return "fbq('track', 'Purchase', $jsonresult);";
     }
 
-    // Get actual product (Object)
+    /**
+     * Get actual product
+     *
+     * @return object
+     */
     public function getProduct()
     {
         return Mage::registry('current_product');
     }
 
-    // Get the registry category in product detail and product list (String)
+    /**
+     * Get the registry category in product detail and product list
+     *
+     * @return string
+     */
     public function getRegistryCategory()
     {
         $category = Mage::registry('current_category');
-
+        
         return $category ? $category->getName() : "";
     }   
 }
