@@ -70,7 +70,7 @@ class Cammino_Fbpixel_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getConfigurableProductPrice($product) 
     {
-        return $product->getPrice();
+        return $this->getCatalogPromoPrice($product);
     }
 
     /**
@@ -82,7 +82,7 @@ class Cammino_Fbpixel_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getSimpleProductPrice($product)
     {
-        return $product->getFinalPrice();
+        return $this->getCatalogPromoPrice($product);
     }
 
     /**
@@ -100,7 +100,7 @@ class Cammino_Fbpixel_Helper_Data extends Mage_Core_Helper_Abstract
 
         foreach ($associated as $item) {
             if ($item->getFinalPrice() > 0) {
-                array_push($prices, $item->getFinalPrice());
+                array_push($prices, $this->getCatalogPromoPrice($item));
             }
         }
 
@@ -241,5 +241,27 @@ class Cammino_Fbpixel_Helper_Data extends Mage_Core_Helper_Abstract
     public function getOrderItemPrice($orderItem)
     {
         return (($orderItem->getRowTotal() - $orderItem->getDiscount()) / $orderItem->getQtyOrdered());
+    }
+
+    /**
+    * Function responsible for process catalogo promo rules
+    *
+    * @param object $price Product object
+    *
+    * @return float
+    */
+    public function getCatalogPromoPrice($product)
+    {
+        $now = Mage::getSingleton('core/date')->timestamp( time() );
+        $websiteId = Mage::app()->getStore()->getWebsiteId();
+        $customerGroup = 0;
+        $productId = $product->getId();
+        $promoPrice = Mage::getResourceModel('catalogrule/rule')->getRulePrice($now, $websiteId, $customerGroup, $productId);
+
+        if (($promoPrice <= $product->getFinalPrice()) && ($promoPrice > 0)) {
+            return $promoPrice;
+        } else {
+            return $product->getFinalPrice();
+        }
     }
 }
