@@ -251,7 +251,8 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
             "content_ids"      => $ids,
             "content_name"     => 'Order Receipt',
             "value"            => (float) $order->getGrandTotal(),
-            "currency"         => 'BRL'
+            "currency"         => 'BRL',
+            "customer_type"    => $this->getOrderCustomerType($order)
         );
 
         Mage::getModel('core/session')->unsFbpixelOrder();
@@ -280,4 +281,19 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         
         return $category ? $category->getName() : "";
     }   
+
+    /**
+     * Get customer type from order
+     *
+     * @return string
+     */
+    public function getOrderCustomerType($order) {
+        try {
+            $customerTypeAttribute = Mage::getModel('eav/config')->getAttribute('customer', 'tipopessoa');
+            $customerType = $customerTypeAttribute->getSource()->getOptionText($order->getCustomerTipopessoa());
+            return $customerType;
+        } catch(Exception $ex) {
+            return '';
+        }   
+    }
 }
