@@ -57,6 +57,14 @@
 					</fbpixel_order_success>
 				</observers>
 			</checkout_multishipping_controller_success_action>
+			<sales_order_place_after>
+				<observers>
+					<fbpixel_order_success>
+						<class>fbpixel/observer</class>
+						<method>orderSuccess</method>
+					</fbpixel_order_success>
+				</observers>
+			</sales_order_place_after>
 		</events>
 	</frontend>
 </config>
