@@ -296,4 +296,46 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
             return '';
         }   
     }
+
+    /**
+    * Check if user is logged
+    *
+    * @return bool
+    */
+    public function isUserLogged()
+    {
+        return (Mage::getSingleton('customer/session')->isLoggedIn());
+    }
+
+    /**
+    * Get logged user data for advanced matching
+    *
+    * @return json
+    */
+    public function getUserData()
+    {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+        $data = array();
+
+        if ($customer && ) {
+            $data = array(
+                'em'            => $customer->getEmail(),
+                'fn'            => $customer->getFirstname(),
+                'ln'            => $customer->getLastname(),
+                'external_id'   => $customer->getEmail(),
+            );
+
+            $address = $customer->getDefaultBillingAddress();
+
+            if ($address) {
+                $data['ph'] => preg_replace( '/[^0-9]/', '', $address->getTelephone());
+                $data['ct'] => $address->getCity();
+                $data['st'] => $address->getRegion();
+                $data['zp'] => preg_replace( '/[^0-9]/', '', $address->getPostcode());
+                $data['country'] => $address->getCountry();
+            }
+        }
+
+        return json_encode($data);
+    }
 }
