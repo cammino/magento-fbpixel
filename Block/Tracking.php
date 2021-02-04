@@ -328,11 +328,11 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
             $address = $customer->getDefaultBillingAddress();
 
             if ($address) {
-                $data['ph'] => preg_replace( '/[^0-9]/', '', $address->getTelephone());
-                $data['ct'] => $address->getCity();
-                $data['st'] => $address->getRegion();
-                $data['zp'] => preg_replace( '/[^0-9]/', '', $address->getPostcode());
-                $data['country'] => $address->getCountry();
+                $data['ph'] = preg_replace( '/[^0-9]/', '', $address->getTelephone());
+                $data['ct'] = $address->getCity();
+                $data['st'] = $address->getRegion();
+                $data['zp'] = preg_replace( '/[^0-9]/', '', $address->getPostcode());
+                $data['country'] = $address->getCountry();
             }
         }
 
