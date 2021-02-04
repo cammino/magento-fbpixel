@@ -317,12 +317,12 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         $customer = Mage::getSingleton('customer/session')->getCustomer();
         $data = array();
 
-        if ($customer && ) {
+        if ($customer) {
             $data = array(
                 'em'            => $customer->getEmail(),
                 'fn'            => $customer->getFirstname(),
                 'ln'            => $customer->getLastname(),
-                'external_id'   => $customer->getEmail(),
+                'external_id'   => $customer->getEmail()
             );
 
             $address = $customer->getDefaultBillingAddress();
