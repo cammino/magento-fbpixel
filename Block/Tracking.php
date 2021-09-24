@@ -74,6 +74,8 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
                 return $this->_setObserverCart();
             } else if ($page == "order") {
                 return $this->_setObserverOrder();
+            } else if ($page == "checkout") {
+                return $this->_setObserverCheckout();
             } else if ($page == "lead") {
                 return $this->setObserverLead();
             } else {
@@ -137,6 +139,33 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         }
 
         return "";
+    }
+
+    /**
+     * Identify if there is a variable in the session to render
+     * the tag for order checkout
+     *
+     * @return string
+     */
+    private function _setObserverCheckout()
+    {
+        $ids = [];
+        $names = [];
+        $value = 0;
+        foreach (Mage::getSingleton('checkout/session')->getQuote()->getAllVisibleItems() as $product) {
+            $ids[] = (int) $this->_fbpixelHelper->getProductId($product);
+            $names[] = (string) $this->_fbpixelHelper->getProductName($product);
+            $value += (float) $this->_fbpixelHelper->getProductPrice($product);
+        }
+        $data = array(
+            "content_type"     => 'product',
+            "content_ids"      => $ids,
+            "content_name"     => $names,
+            "value"            => $value,
+            "currency"         => 'BRL'
+        );
+        $json = json_encode($data);
+        return "var fb_checkout_data = $json;";
     }
 
     /**
