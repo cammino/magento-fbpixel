@@ -158,8 +158,10 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         );
 
         $json = json_encode($data);
+        $eventId = md5(uniqid(rand(), true));
+        $conversionScript = $this->getConversionApiAjax('ViewContent', $json, $eventId);
 
-        return "fbq('track', 'ViewContent', $json);";
+        return "fbq('track', 'ViewContent', $json, {eventID: '$eventId'});\n$conversionScript";
     }  
 
     /**
@@ -204,7 +206,10 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         );
 
         $json = json_encode($data);
-        return "fbq('track', 'AddToCart', $json);";
+        $eventId = md5(uniqid(rand(), true));
+        $conversionScript = $this->getConversionApiAjax('AddToCart', $json, $eventId);
+
+        return "fbq('track', 'AddToCart', $json, {eventID: '$eventId'});\n$conversionScript";
     }
 
     /**
@@ -256,8 +261,12 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         );
 
         Mage::getModel('core/session')->unsFbpixelOrder();
+
         $jsonresult = json_encode($json);
-        return "fbq('track', 'Purchase', $jsonresult);";
+        $eventId = md5(uniqid(rand(), true));
+        $conversionScript = $this->getConversionApiAjax('Purchase', $json, $eventId);
+
+        return "fbq('track', 'Purchase', $jsonresult, {eventID: '$eventId'});\n$conversionScript";
     }
 
     /**
@@ -337,5 +346,23 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         }
 
         return json_encode($data);
+    }
+
+    public function getConversionApiAjax($eventType, $eventData, $eventId) {
+
+        $conversionScript  = "(function() {\n"
+        $conversionScript .= "    var fbpRegex = /_fbp=(fb\.[0-9]+\.[0-9]+\.[0-9]+)/ig.exec(window.document.cookie); \n";
+        $conversionScript .= "    var fbcRegex = /_fbc=(fb\.[0-9]+\.[0-9]+\.[0-9]+)/ig.exec(window.document.cookie); \n";
+        $conversionScript .= "    var eventData = $eventData; \n";
+        $conversionScript .= "    jQuery.post('/fbpixel/event/send', {\n"
+        $conversionScript .= "        \"event_type\": '$eventType', \n"
+        $conversionScript .= "        \"event_id\": '$eventId', \n"
+        $conversionScript .= "        \"event_data\": eventData, \n"
+        $conversionScript .= "        \"fbp\": (fbpRegex.length == 2) ? fbpRegex[1] : \"\", \n";
+        $conversionScript .= "        \"fbc\": (fbcRegex.length == 2) ? fbcRegex[1] : \"\", \n";
+        $conversionScript .= "    }); \n";
+        $conversionScript .= "});\n"
+
+        return $conversionScript;
     }
 }
