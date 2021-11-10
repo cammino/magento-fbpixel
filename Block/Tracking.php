@@ -348,6 +348,11 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         return json_encode($data);
     }
 
+    /**
+    * Returns ajax conversion request
+    *
+    * @return json
+    */
     public function getConversionApiAjax($eventType, $eventData, $eventId) {
 
         $conversionScript  = "(function() {\n";

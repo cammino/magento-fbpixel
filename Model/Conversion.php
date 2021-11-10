@@ -12,7 +12,26 @@
 class Cammino_Fbpixel_Model_Conversion
 {
 
+    /**
+     * Function responsible to process conversion
+     * 
+     * @return json
+     */
     public function sendEvent($request) {
+
+        $payload = $this->formatJson($request);
+        $url = "https://graph.facebook.com/$version/$pixelId/events?access_token=$token";
+        $result = $this->execCurl($url, $payload);
+
+        return $result;
+    }
+
+    /**
+     * Function responsible to format conversion json
+     * 
+     * @return json
+     */
+    public function formatJson($request) {
 
         $version = 'v12.0';
         $eventType = $request->getParam('event_type');
@@ -52,9 +71,16 @@ class Cammino_Fbpixel_Model_Conversion
             ]
         );
 
-        $url = "https://graph.facebook.com/$version/$pixelId/events?access_token=$token";
+        return json_encode($data);
+    }
+
+    /**
+     * Function responsible to send json using curl
+     * 
+     * @return json
+     */
+    public function execCurl($url, $payload) {
         $ch = curl_init($url);
-        $payload = json_encode($data);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
