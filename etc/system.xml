@@ -25,6 +25,16 @@
                     <show_in_store>1</show_in_store>
  
                     <fields>
+                        <fbpixel_active translate="label">
+                            <label>Ativar</label>
+                            <comment></comment>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </fbpixel_active>
                         <fbpixel_store_id translate="label">
                             <label>ID da loja</label>
                             <comment>código gerado pelo Facebook Pixel</comment>
@@ -34,16 +44,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </fbpixel_store_id>
-                        <fbpixel_active translate="label">
-                            <label>Ativar</label>
-                            <comment></comment>
-                            <frontend_type>select</frontend_type>
-                            <sort_order>90</sort_order>
+                        <fbpixel_token translate="label">
+                            <label>Facebook Token</label>
+                            <comment>Token para enviar requisições para API de Conversão</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                        </fbpixel_active>
+                        </fbpixel_token>
                     </fields>
                 </fbpixel_group>
             </groups>
