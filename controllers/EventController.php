@@ -44,6 +44,6 @@ class Cammino_Fbpixel_EventController extends Mage_Core_Controller_Front_Action
             ]
         );
 
-        return json_encode($data);
+        echo json_encode($data);
     }
 }
