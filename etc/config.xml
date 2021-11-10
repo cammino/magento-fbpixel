@@ -65,6 +65,14 @@
 					</fbpixel_order_success>
 				</observers>
 			</sales_order_place_after>
+			<controller_action_predispatch_amcart_ajax_index>
+				<observers>
+					<fbpixel_amcart_add>
+						<class>fbpixel/observer</class>
+						<method>addToCart</method>
+					</fbpixel_amcart_add>
+				</observers>
+			</controller_action_predispatch_amcart_ajax_index>
 		</events>
 	</frontend>
 </config>
