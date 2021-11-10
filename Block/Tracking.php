@@ -361,7 +361,7 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         $conversionScript .= "        \"fbp\": (fbpRegex.length == 2) ? fbpRegex[1] : \"\", \n";
         $conversionScript .= "        \"fbc\": (fbcRegex.length == 2) ? fbcRegex[1] : \"\", \n";
         $conversionScript .= "    }); \n";
-        $conversionScript .= "});\n"
+        $conversionScript .= "});\n";
 
         return $conversionScript;
     }
