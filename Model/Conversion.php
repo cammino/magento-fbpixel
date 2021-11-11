@@ -85,11 +85,13 @@ class Cammino_Fbpixel_Model_Conversion
         Mage::log($url, null, 'fbpixel_api.log');
         Mage::log($payload, null, 'fbpixel_api.log');
 
-        $ch = curl_init($url);
+        $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
 
         $result = curl_exec($ch);
         curl_close($ch);
