@@ -20,8 +20,7 @@ class Cammino_Fbpixel_Model_Conversion
     public function sendEvent($request) {
 
         $payload = $this->formatJson($request);
-        $url = "https://graph.facebook.com/$version/$pixelId/events?access_token=$token";
-        $result = $this->execCurl($url, $payload);
+        $result = $this->execCurl($payload);
 
         return $result;
     }
@@ -33,11 +32,8 @@ class Cammino_Fbpixel_Model_Conversion
      */
     public function formatJson($request) {
 
-        $version = 'v12.0';
         $eventType = $request->getParam('event_type');
         $eventData = $request->getParam('event_data');
-        $token = Mage::getStoreConfig('fbpixel/fbpixel_group/fbpixel_token');
-        $pixelId = Mage::getStoreConfig('fbpixel/fbpixel_group/fbpixel_store_id');
         $eventId = $request->getParam('event_id');
         $sourceUrl = $_SERVER['HTTP_REFERER'];
         $ipAddress = $_SERVER['HTTP_X_FORWARDED_FOR']; // TODO $_SERVER['REMOTE_ADDR'] 
@@ -79,7 +75,13 @@ class Cammino_Fbpixel_Model_Conversion
      * 
      * @return json
      */
-    public function execCurl($url, $payload) {
+    public function execCurl($payload) {
+
+        $version = 'v12.0';
+        $token = Mage::getStoreConfig('fbpixel/fbpixel_group/fbpixel_token');
+        $pixelId = Mage::getStoreConfig('fbpixel/fbpixel_group/fbpixel_store_id');
+        $url = "https://graph.facebook.com/$version/$pixelId/events?access_token=$token";
+
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
