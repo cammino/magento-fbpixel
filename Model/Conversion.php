@@ -82,6 +82,9 @@ class Cammino_Fbpixel_Model_Conversion
         $pixelId = Mage::getStoreConfig('fbpixel/fbpixel_group/fbpixel_store_id');
         $url = "https://graph.facebook.com/$version/$pixelId/events?access_token=$token";
 
+        Mage::log($url, null, 'fbpixel_api.log');
+        Mage::log($payload, null, 'fbpixel_api.log');
+
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
@@ -90,6 +93,8 @@ class Cammino_Fbpixel_Model_Conversion
 
         $result = curl_exec($ch);
         curl_close($ch);
+
+        Mage::log($result, null, 'fbpixel_api.log');
 
         return $result;
     }
