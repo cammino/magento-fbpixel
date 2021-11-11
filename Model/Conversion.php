@@ -42,29 +42,27 @@ class Cammino_Fbpixel_Model_Conversion
         $fbp = $request->getParam('fbp');
 
         $data = array(
-            'data' => [
-                array(
-                    'event_name' => $eventType,
-                    'event_time' => time(), 
-                    'event_id' => $eventId,
-                    'event_source_url' => $sourceUrl,
-                    'user_data' => array(
-                        'client_ip_address' => $ipAddress,
-                        'client_user_agent' => $userAgent,
-                        /*
-                        'em' => array(
-                           '309a0a5c3e211326ae75ca18196d301a9bdbd1a882a4d2569511033da23f0abd' // hashed
-                        ),
-                        'ph' => array(
-                           '254aa248acb47dd654ca3ea53f48c2c26d641d23d7e2e93a1ec56258df7674c4' // hashed
-                        ),
-                        */
-                        'fbc' => $fbc,
-                        'fbp' => $fbp
+            array(
+                'event_name' => $eventType,
+                'event_time' => time(), 
+                'event_id' => $eventId,
+                'event_source_url' => $sourceUrl,
+                'user_data' => array(
+                    'client_ip_address' => $ipAddress,
+                    'client_user_agent' => $userAgent,
+                    /*
+                    'em' => array(
+                       '309a0a5c3e211326ae75ca18196d301a9bdbd1a882a4d2569511033da23f0abd' // hashed
                     ),
-                    'custom_data' => json_decode($eventData)
-                )
-            ]
+                    'ph' => array(
+                       '254aa248acb47dd654ca3ea53f48c2c26d641d23d7e2e93a1ec56258df7674c4' // hashed
+                    ),
+                    */
+                    'fbc' => $fbc,
+                    'fbp' => $fbp
+                ),
+                'custom_data' => json_decode($eventData)
+            )
         );
 
         return json_encode($data);
@@ -80,7 +78,12 @@ class Cammino_Fbpixel_Model_Conversion
         $version = 'v12.0';
         $token = Mage::getStoreConfig('fbpixel/fbpixel_group/fbpixel_token');
         $pixelId = Mage::getStoreConfig('fbpixel/fbpixel_group/fbpixel_store_id');
-        $url = "https://graph.facebook.com/$version/$pixelId/events?access_token=$token";
+        $url = "https://graph.facebook.com/$version/$pixelId/events?=";
+
+        $post = array(
+            "access_token" => $token,
+            "data" => $payload
+        );
 
         Mage::log($url, null, 'fbpixel_api.log');
         Mage::log($payload, null, 'fbpixel_api.log');
@@ -90,7 +93,8 @@ class Cammino_Fbpixel_Model_Conversion
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
 
         $result = curl_exec($ch);
