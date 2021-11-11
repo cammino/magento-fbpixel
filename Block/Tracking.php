@@ -264,7 +264,7 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
 
         $jsonresult = json_encode($json);
         $eventId = md5(uniqid(rand(), true));
-        $conversionScript = $this->getConversionApiAjax('Purchase', $json, $eventId);
+        $conversionScript = $this->getConversionApiAjax('Purchase', $jsonresult, $eventId);
 
         return "fbq('track', 'Purchase', $jsonresult, {eventID: '$eventId'});\n$conversionScript";
     }
