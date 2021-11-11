@@ -32,6 +32,7 @@ class Cammino_Fbpixel_Model_Conversion
      */
     public function formatJson($request) {
 
+        
         $eventType = $request->getParam('event_type');
         $eventData = $request->getParam('event_data');
         $eventId = $request->getParam('event_id');
@@ -50,20 +51,25 @@ class Cammino_Fbpixel_Model_Conversion
                 'user_data' => array(
                     'client_ip_address' => $ipAddress,
                     'client_user_agent' => $userAgent,
-                    /*
-                    'em' => array(
-                       '309a0a5c3e211326ae75ca18196d301a9bdbd1a882a4d2569511033da23f0abd' // hashed
-                    ),
-                    'ph' => array(
-                       '254aa248acb47dd654ca3ea53f48c2c26d641d23d7e2e93a1ec56258df7674c4' // hashed
-                    ),
-                    */
                     'fbc' => $fbc,
                     'fbp' => $fbp
                 ),
                 'custom_data' => json_decode($eventData)
             )
         );
+
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+
+        if ($customer) {
+            $data[0]['user_data']['em'] = array(hash('sha256', $customer->getEmail()));
+
+            $address = $customer->getDefaultBillingAddress();
+
+            if ($address) {
+                $phone = preg_replace( '/[^0-9]/', '', $address->getTelephone());
+                $data[0]['user_data']['pn'] = array(hash('sha256', $phone));                
+            }
+        }
 
         return json_encode($data);
     }
