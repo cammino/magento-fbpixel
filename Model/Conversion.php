@@ -67,7 +67,7 @@ class Cammino_Fbpixel_Model_Conversion
 
             if ($address) {
                 $phone = preg_replace( '/[^0-9]/', '', $address->getTelephone());
-                $data[0]['user_data']['pn'] = array(hash('sha256', $phone));                
+                $data[0]['user_data']['ph'] = array(hash('sha256', $phone));                
             }
         }
 
