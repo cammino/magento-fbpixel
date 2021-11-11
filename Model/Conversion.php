@@ -78,7 +78,7 @@ class Cammino_Fbpixel_Model_Conversion
         $version = 'v12.0';
         $token = Mage::getStoreConfig('fbpixel/fbpixel_group/fbpixel_token');
         $pixelId = Mage::getStoreConfig('fbpixel/fbpixel_group/fbpixel_store_id');
-        $url = "https://graph.facebook.com/$version/$pixelId/events?=";
+        $url = "https://graph.facebook.com/$version/$pixelId/events";
 
         $post = array(
             "access_token" => $token,
@@ -86,7 +86,7 @@ class Cammino_Fbpixel_Model_Conversion
         );
 
         Mage::log($url, null, 'fbpixel_api.log');
-        Mage::log($payload, null, 'fbpixel_api.log');
+        Mage::log($post, null, 'fbpixel_api.log');
 
         $ch = curl_init();
 
