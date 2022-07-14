@@ -100,6 +100,11 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
             return $this->getTagProductView();
         }
 
+        // Checkout
+        if (Mage::app()->getRequest()->getRouteName() == "onestepcheckout") {
+            return $this->getTagInitiateCheckout();
+        }
+
         // Category Page
         // if ($this->getRegistryCategory() || $this->isSearchPage())
         // {
@@ -162,7 +167,24 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
         $conversionScript = $this->getConversionApiAjax('ViewContent', $json, $eventId);
 
         return "fbq('track', 'ViewContent', $json, {eventID: '$eventId'});\n$conversionScript";
-    }  
+    }
+
+    /**
+     * Get initiate checkout tag
+     *
+     * @return string
+     */
+    public function getTagInitiateCheckout() 
+    {
+        $json = json_encode(array());
+        $eventId = md5(uniqid(rand(), true));
+        $conversionScript = $this->getConversionApiAjax('InitiateCheckout', $json, $eventId);
+
+        $js =  "fbq('track', 'InitiateCheckout', $json, {eventID: '$eventId'}); \n";
+        $js .= "$conversionScript \n";
+
+        return $js;
+    }
 
     /**
      * Get cart add tag
