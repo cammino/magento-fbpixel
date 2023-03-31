@@ -48,6 +48,7 @@ class Cammino_Fbpixel_Model_Conversion
                 'event_time' => time(), 
                 'event_id' => $eventId,
                 'event_source_url' => $sourceUrl,
+                'action_source' => 'website',
                 'user_data' => array(
                     'client_ip_address' => $ipAddress,
                     'client_user_agent' => $userAgent,
