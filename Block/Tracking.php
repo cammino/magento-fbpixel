@@ -379,7 +379,7 @@ class Cammino_Fbpixel_Block_Tracking extends Mage_Core_Block_Template
 
         $conversionScript  = "(function() {\n";
         $conversionScript .= "    var fbpRegex = /_fbp=(fb\.[0-9]+\.[0-9]+\.[0-9]+)/ig.exec(window.document.cookie); \n";
-        $conversionScript .= "    var fbcRegex = /_fbc=(fb\.[0-9]+\.[0-9]+\.[0-9]+)/ig.exec(window.document.cookie); \n";
+        $conversionScript .= "    var fbcRegex = /_fbc=(fb\.[0-9]+\.[0-9]+\.[a-zA-Z0-9_]+)/ig.exec(window.document.cookie); \n";
         $conversionScript .= "    var eventData = $eventData; \n";
         $conversionScript .= "    jQuery.post('/fbpixel/event/send', {\n";
         $conversionScript .= "        \"event_type\": '$eventType', \n";
