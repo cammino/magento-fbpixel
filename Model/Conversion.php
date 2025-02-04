@@ -51,13 +51,20 @@ class Cammino_Fbpixel_Model_Conversion
                 'action_source' => 'website',
                 'user_data' => array(
                     'client_ip_address' => $ipAddress,
-                    'client_user_agent' => $userAgent,
-                    'fbc' => $fbc,
-                    'fbp' => $fbp
+                    'client_user_agent' => $userAgent //,
+                    //'fbc' => $fbc,
+                    //'fbp' => $fbp
                 ),
                 'custom_data' => json_decode($eventData)
             )
         );
+
+        if (!empty($fbc)) {
+            $data[0]['user_data']['fbc'] = $fbc;
+        }
+        if (!empty($fbp)) {
+            $data[0]['user_data']['fbp'] = $fbp;
+        }
 
         $customer = Mage::getSingleton('customer/session')->getCustomer();
 
